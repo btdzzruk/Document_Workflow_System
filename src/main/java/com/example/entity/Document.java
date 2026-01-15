@@ -30,5 +30,7 @@ public class Document {
     @Enumerated(EnumType.STRING)
     private DocumentStatus status; // UPLOADED, PREVIEW_READY
 
+    private String createBy;
+
     private LocalDateTime createAt =  LocalDateTime.now();
 }

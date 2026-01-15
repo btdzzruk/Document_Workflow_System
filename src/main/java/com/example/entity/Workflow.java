@@ -10,7 +10,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "wordflows")
+@Table(name = "workflows")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -23,8 +23,20 @@ public class Workflow {
     @Enumerated(EnumType.STRING)
     private WorkflowState state = WorkflowState.DRAFT;
 
+    @Column(name = "document_id", nullable = false)
+    private Long documentId;
+
     @Column(nullable = false)
-    private String createdBy;
+    private String createdBy; // user name từ keycloak
+
+    private String reviewer; // người review (admin)
+
+    private LocalDateTime reviewAt; // lúc review
+    private LocalDateTime approvedAt; // lúc approved
+
+    // sla fields
+    private LocalDateTime reviewDeadline;
+    private LocalDateTime approvedDeadline;
 
     private LocalDateTime createAt = LocalDateTime.now();
 }

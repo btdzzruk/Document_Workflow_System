@@ -4,7 +4,9 @@ import com.example.dto.response.APIResponse;
 import com.example.entity.Workflow;
 import com.example.entity.enums.WorkflowState;
 import com.example.service.WorkflowService;
+import com.example.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,10 +16,12 @@ public class WorkflowController {
 
     private final WorkflowService workflowService;
 
-    @PostMapping
-    public APIResponse<Long> createWorkflow() {
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/documents/{docId}/workflow")
+    public APIResponse<Long> createWorkflow(@PathVariable Long docId) {
 
-        Long workflowId = workflowService.createWorkflow(1L); // giả lập user
+        String username = SecurityUtils.getCurrentUsername();
+        Long workflowId = workflowService.createWorkflow(docId, username);
 
         APIResponse<Long> response = new APIResponse<>();
         response.setSuccess(true);
@@ -28,6 +32,7 @@ public class WorkflowController {
 
     // submit workflow
     // DRAFT -> SUBMITTED
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/{id}/submit")
     public APIResponse<Void> submit(@PathVariable Long id) {
         workflowService.submit(id);
@@ -40,7 +45,8 @@ public class WorkflowController {
     }
 
     // lấy trạng thái hiện tại: redis -> sql fallback
-    @GetMapping("/{id}state")
+    @PreAuthorize("hasAnyRole('USER','REVIEWER','APPROVER','ADMIN')")
+    @GetMapping("/{id}/state")
     public APIResponse<WorkflowState> getWorkflowState(@PathVariable Long id) {
         WorkflowState state = workflowService.getCurrentStat(id);
 

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <title>Home</title>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+</head>
+
+<body class="container mt-4">
+
+<h3>📄 Document Workflow</h3>
+
+<!-- USER -->
+<div sec:authorize="hasRole('USER')">
+    <button class="btn btn-primary">Upload</button>
+</div>
+
+<!-- REVIEWER -->
+<div sec:authorize="hasRole('REVIEWER')">
+    <button class="btn btn-warning">Review</button>
+</div>
+
+<!-- APPROVER -->
+<div sec:authorize="hasRole('APPROVER')">
+    <button class="btn btn-success">Approve</button>
+</div>
+
+<!-- ADMIN -->
+<div sec:authorize="hasRole('ADMIN')">
+    <a href="/admin" class="btn btn-danger">Admin</a>
+</div>
+
+</body>
+</html>

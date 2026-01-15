@@ -20,24 +20,25 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        // Tạo JwtAuthenticationConverter
+
         JwtAuthenticationConverter jwtConverter = new JwtAuthenticationConverter();
         jwtConverter.setJwtGrantedAuthoritiesConverter(keycloakRoleConverter);
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/", "/css/**", "/js/**").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
-                        .requestMatchers("/error").permitAll()
-                        .requestMatchers("/api/test/admin").hasRole("ADMIN")
-                        .requestMatchers("/api/test/user").hasRole("USER")
+
+                        .requestMatchers("/user/**").hasRole("USER")
+                        .requestMatchers("/review/**").hasRole("REVIEWER")
+                        .requestMatchers("/approve/**").hasRole("APPROVER")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth -> oauth
-                        .jwt(jwt -> jwt
-                                .jwtAuthenticationConverter(jwtConverter)
-                        )
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtConverter))
                 );
 
         return http.build();
